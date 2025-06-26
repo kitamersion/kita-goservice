@@ -1,0 +1,20 @@
+server:
+  host: "localhost"
+  port: "8080"
+
+database:
+  host: "localhost"
+  port: "5432"
+  user: "postgres"
+  password: "password"
+  dbname: "microservice_db"
+  sslmode: "disable"
+
+kafka:
+  brokers:
+    - "localhost:9092"
+  topics:
+    user_events: "user.events"
+
+logger:
+  level: "info"
