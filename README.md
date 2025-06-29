@@ -8,14 +8,10 @@ If you use nix: `nix-shell` or `nix-shell shell.nix`
 
 **Start infrastructure**
 
+You can skip straight to `Testing API` step if you dont need to run the apps independently
+
 ```bash
 make docker-up
-```
-
-**Create Kafka topics**
-
-```bash
-make create-topics
 ```
 
 **Run applications**
