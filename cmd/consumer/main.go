@@ -33,7 +33,7 @@ func main() {
 		logger.WithError(err).Fatal("Failed to initialize Kafka topics")
 	}
 
-	// Initialize consumer
+	// TODO: make this generic for additional consumers to get registered
 	eventConsumer := consumer.NewConsumer(&cfg.Kafka, logger)
 	defer eventConsumer.Close()
 

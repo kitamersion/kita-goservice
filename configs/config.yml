@@ -14,7 +14,9 @@ kafka:
   brokers:
     - "kafka:9092"
   topics:
-    user_events: "user.events"
+    user_events: "user-events"
+  consumer_groups:
+    user_consumer: " user-consumer"
 
 logger:
   level: "info"

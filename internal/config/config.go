@@ -32,6 +32,9 @@ type KafkaConfig struct {
 	Topics  struct {
 		UserEvents string `mapstructure:"user_events"`
 	} `mapstructure:"topics"`
+	ConsumerGroups struct {
+		UserConsumer string `mapstructure:"user_consumer"`
+	} `mapstructure:"consumer_groups"`
 }
 
 type LoggerConfig struct {

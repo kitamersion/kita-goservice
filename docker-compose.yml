@@ -35,12 +35,7 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
     healthcheck:
       test:
-        [
-          "CMD",
-          "kafka-broker-api-versions",
-          "--bootstrap-server",
-          "kafka:9092",
-        ]
+        ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "kafka:9092"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -50,6 +45,7 @@ services:
       - app_network
 
   api:
+    # TODO: use versioned image
     build:
       context: .
       dockerfile: docker/Dockerfile.api
@@ -68,6 +64,7 @@ services:
       - app_network
 
   consumer:
+    # TODO: use versioned image
     build:
       context: .
       dockerfile: docker/Dockerfile.consumer

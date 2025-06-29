@@ -23,7 +23,7 @@ func NewConsumer(cfg *config.KafkaConfig, logger *logrus.Logger) *Consumer {
 	readerConfig := kafka.ReaderConfig{
 		Brokers:        cfg.Brokers,
 		Topic:          cfg.Topics.UserEvents,
-		GroupID:        "user-service-consumer",
+		GroupID:        cfg.ConsumerGroups.UserConsumer,
 		StartOffset:    kafka.FirstOffset,
 		MinBytes:       1,           // 1B
 		MaxBytes:       10e6,        // 10MB
