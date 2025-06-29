@@ -1,6 +1,8 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/spf13/viper"
 )
 
@@ -39,8 +41,19 @@ type LoggerConfig struct {
 func LoadConfig(path string) (*Config, error) {
 	viper.AddConfigPath(path)
 	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
+	viper.SetConfigType("yml")
+
 	viper.AutomaticEnv()
+
+	// Environment variable bindings
+	viper.BindEnv("database.host", "DATABASE_HOST")
+	viper.BindEnv("database.port", "DATABASE_PORT")
+	viper.BindEnv("database.user", "DATABASE_USER")
+	viper.BindEnv("database.password", "DATABASE_PASSWORD")
+	viper.BindEnv("database.dbname", "DATABASE_DBNAME")
+	viper.BindEnv("database.sslmode", "DATABASE_SSLMODE")
+
+	viper.BindEnv("kafka.brokers", "KAFKA_BROKERS") // Will need parsing, see below
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
@@ -51,5 +64,22 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 
+	// Handle KAFKA_BROKERS as comma-separated string into []string
+	if brokers := viper.GetString("kafka.brokers"); brokers != "" {
+		config.Kafka.Brokers = splitAndTrim(brokers)
+	}
+
 	return &config, nil
+}
+
+func splitAndTrim(s string) []string {
+	parts := strings.Split(s, ",")
+	result := make([]string, 0, len(parts))
+	for _, p := range parts {
+		trimmed := strings.TrimSpace(p)
+		if trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	return result
 }
