@@ -31,7 +31,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     healthcheck:
@@ -40,7 +40,7 @@ services:
           "CMD",
           "kafka-broker-api-versions",
           "--bootstrap-server",
-          "localhost:9092",
+          "kafka:9092",
         ]
       interval: 10s
       timeout: 5s
@@ -64,11 +64,6 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_HOST=postgres
-      - DATABASE_PORT=5432
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=password
-      - DATABASE_DBNAME=microservice_db
-      - DATABASE_SSLMODE=disable
       - KAFKA_BROKERS=kafka:9092
     networks:
       - app_network
@@ -85,11 +80,6 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_HOST=postgres
-      - DATABASE_PORT=5432
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=password
-      - DATABASE_DBNAME=microservice_db
-      - DATABASE_SSLMODE=disable
       - KAFKA_BROKERS=kafka:9092
     networks:
       - app_network
