@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/kitamersion/go-goservice/internal/config"
+	"github.com/kitamersion/go-goservice/internal/events"
 	"github.com/kitamersion/go-goservice/internal/events/consumer"
 	"github.com/kitamersion/go-goservice/internal/events/consumer/handlers"
 	"github.com/kitamersion/go-goservice/internal/events/types"
@@ -24,6 +25,13 @@ func main() {
 	// Setup logger
 	logger := logrus.New()
 	logger.SetLevel(logrus.InfoLevel)
+
+	logger.Info("User topic: ", cfg.Kafka.Topics.UserEvents)
+
+	// Initialize Kafka topics (runs every startup, safe if already exists)
+	if err := events.InitKafkaTopics(&cfg.Kafka, logger); err != nil {
+		logger.WithError(err).Fatal("Failed to initialize Kafka topics")
+	}
 
 	// Initialize consumer
 	eventConsumer := consumer.NewConsumer(&cfg.Kafka, logger)

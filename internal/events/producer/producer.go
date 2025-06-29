@@ -2,6 +2,7 @@ package producer
 
 import (
 	"context"
+	"time"
 
 	"github.com/kitamersion/go-goservice/internal/config"
 	"github.com/kitamersion/go-goservice/internal/events/types"
@@ -16,9 +17,12 @@ type Producer struct {
 
 func NewProducer(cfg *config.KafkaConfig, logger *logrus.Logger) *Producer {
 	writer := &kafka.Writer{
-		Addr:     kafka.TCP(cfg.Brokers...),
-		Topic:    cfg.Topics.UserEvents,
-		Balancer: &kafka.LeastBytes{},
+		Addr:         kafka.TCP(cfg.Brokers...),
+		Topic:        cfg.Topics.UserEvents,
+		Balancer:     &kafka.LeastBytes{},
+		RequiredAcks: kafka.RequireAll, // Strong durability
+		BatchSize:    1,                // default is fine, or increase for higher throughput
+		BatchTimeout: 10 * time.Millisecond,
 	}
 
 	return &Producer{

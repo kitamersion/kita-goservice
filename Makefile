@@ -38,14 +38,3 @@ dev-api:
 dev-consumer:
 	air -c .air.toml ./cmd/consumer
 
-# Database migrations
-migrate-up:
-	migrate -path migrations -database "postgresql://postgres:password@localhost:5432/microservice_db?sslmode=disable" up
-
-migrate-down:
-	migrate -path migrations -database "postgresql://postgres:password@localhost:5432/microservice_db?sslmode=disable" down
-
-# Kafka topics
-create-topics:
-	docker exec -it kafka kafka-topics --create --topic user.events --bootstrap-server localhost:9092 --replication-factor 1 --partitions 3
-
