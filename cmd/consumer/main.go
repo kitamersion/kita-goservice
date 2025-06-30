@@ -11,7 +11,7 @@ import (
 	"github.com/kitamersion/go-goservice/internal/events"
 	"github.com/kitamersion/go-goservice/internal/events/consumer"
 	"github.com/kitamersion/go-goservice/internal/events/consumer/handlers"
-	"github.com/kitamersion/go-goservice/internal/events/types"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -34,16 +34,17 @@ func main() {
 	}
 
 	// TODO: make this generic for additional consumers to get registered
-	eventConsumer := consumer.NewConsumer(&cfg.Kafka, logger)
-	defer eventConsumer.Close()
+	kafkaConsumer := consumer.NewConsumer(&cfg.Kafka, logger)
+	defer kafkaConsumer.Close()
 
 	// Initialize event handlers
 	userHandlers := handlers.NewUserEventHandlers(logger)
 
-	// Register event handlers with the correct signature
-	eventConsumer.RegisterHandler(types.UserCreated, userHandlers.HandleUserCreated)
-	eventConsumer.RegisterHandler(types.UserUpdated, userHandlers.HandleUserUpdated)
-	eventConsumer.RegisterHandler(types.UserDeleted, userHandlers.HandleUserDeleted)
+	// Register handlers for each proto event type
+	// The event type string matches what the producer sends in the "event_type" header
+	kafkaConsumer.RegisterHandler("userpb.UserCreated", userHandlers.HandleUserCreated)
+	kafkaConsumer.RegisterHandler("userpb.UserUpdated", userHandlers.HandleUserUpdated)
+	kafkaConsumer.RegisterHandler("userpb.UserDeleted", userHandlers.HandleUserDeleted)
 
 	// Setup graceful shutdown
 	ctx, cancel := context.WithCancel(context.Background())
@@ -59,7 +60,7 @@ func main() {
 
 	// Start consuming
 	logger.Info("Starting event consumer...")
-	if err := eventConsumer.Start(ctx); err != nil {
+	if err := kafkaConsumer.Start(ctx); err != nil {
 		logger.WithError(err).Error("Consumer stopped with error")
 	}
 }

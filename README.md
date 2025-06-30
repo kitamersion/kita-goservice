@@ -33,3 +33,7 @@ curl -X POST http://localhost:8080/api/v1/users \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","name":"Test User"}'
 ```
+
+## Schema Evolution
+
+Using [protobuf](https://protobuf.dev/overview/) to manage event schemas. Proto files are located in `proto`, use `make proto` to generate code which will will output to `internal/events/proto`

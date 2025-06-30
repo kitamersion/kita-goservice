@@ -1,4 +1,4 @@
-.PHONY: build run test clean docker-up docker-down kafka-format
+.PHONY: build run test clean docker-up docker-down proto
 
 # Build all applications
 build:
@@ -38,3 +38,5 @@ dev-api:
 dev-consumer:
 	air -c .air.toml ./cmd/consumer
 
+proto:
+	protoc -I=./proto --go_out=./internal/events/ ./proto/*.proto

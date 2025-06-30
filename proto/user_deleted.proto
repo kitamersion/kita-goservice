@@ -1,0 +1,9 @@
+syntax = "proto3";
+package userpb;
+
+option go_package = "proto/userpb";
+
+message UserDeleted {
+  string id = 1;
+  int64 deleted_at = 2; // Unix timestamp (seconds)
+}
