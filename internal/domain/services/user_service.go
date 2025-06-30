@@ -8,7 +8,7 @@ import (
 	"github.com/kitamersion/go-goservice/internal/domain/entities"
 	"github.com/kitamersion/go-goservice/internal/domain/repositories"
 	"github.com/kitamersion/go-goservice/internal/events/producer"
-	"github.com/kitamersion/go-goservice/internal/events/proto/userpb"
+	"github.com/kitamersion/go-goservice/internal/events/proto/events/userpb"
 )
 
 type UserService struct {

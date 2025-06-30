@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kitamersion/go-goservice/internal/events/proto/userpb"
+	"github.com/kitamersion/go-goservice/internal/events/proto/events/userpb"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/encoding/protojson"
 )

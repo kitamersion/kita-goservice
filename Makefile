@@ -39,4 +39,4 @@ dev-consumer:
 	air -c .air.toml ./cmd/consumer
 
 proto:
-	protoc -I=./proto --go_out=./internal/events/ ./proto/*.proto
+	protoc -I=./proto --go_out=./internal/events/ ./proto/**/**/*.proto
