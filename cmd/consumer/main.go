@@ -8,9 +8,10 @@ import (
 	"syscall"
 
 	"github.com/kitamersion/go-goservice/internal/config"
+	"github.com/kitamersion/go-goservice/internal/events"
 	"github.com/kitamersion/go-goservice/internal/events/consumer"
 	"github.com/kitamersion/go-goservice/internal/events/consumer/handlers"
-	"github.com/kitamersion/go-goservice/internal/events/types"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -25,17 +26,25 @@ func main() {
 	logger := logrus.New()
 	logger.SetLevel(logrus.InfoLevel)
 
-	// Initialize consumer
-	eventConsumer := consumer.NewConsumer(&cfg.Kafka, logger)
-	defer eventConsumer.Close()
+	logger.Info("User topic: ", cfg.Kafka.Topics.UserEvents)
+
+	// Initialize Kafka topics (runs every startup, safe if already exists)
+	if err := events.InitKafkaTopics(&cfg.Kafka, logger); err != nil {
+		logger.WithError(err).Fatal("Failed to initialize Kafka topics")
+	}
+
+	// TODO: make this generic for additional consumers to get registered
+	kafkaConsumer := consumer.NewConsumer(&cfg.Kafka, logger)
+	defer kafkaConsumer.Close()
 
 	// Initialize event handlers
 	userHandlers := handlers.NewUserEventHandlers(logger)
 
-	// Register event handlers with the correct signature
-	eventConsumer.RegisterHandler(types.UserCreated, userHandlers.HandleUserCreated)
-	eventConsumer.RegisterHandler(types.UserUpdated, userHandlers.HandleUserUpdated)
-	eventConsumer.RegisterHandler(types.UserDeleted, userHandlers.HandleUserDeleted)
+	// Register handlers for each proto event type
+	// The event type string matches what the producer sends in the "event_type" header
+	kafkaConsumer.RegisterHandler("userpb.UserCreated", userHandlers.HandleUserCreated)
+	kafkaConsumer.RegisterHandler("userpb.UserUpdated", userHandlers.HandleUserUpdated)
+	kafkaConsumer.RegisterHandler("userpb.UserDeleted", userHandlers.HandleUserDeleted)
 
 	// Setup graceful shutdown
 	ctx, cancel := context.WithCancel(context.Background())
@@ -51,7 +60,7 @@ func main() {
 
 	// Start consuming
 	logger.Info("Starting event consumer...")
-	if err := eventConsumer.Start(ctx); err != nil {
+	if err := kafkaConsumer.Start(ctx); err != nil {
 		logger.WithError(err).Error("Consumer stopped with error")
 	}
 }

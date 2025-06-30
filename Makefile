@@ -1,4 +1,4 @@
-.PHONY: build run test clean docker-up docker-down kafka-format
+.PHONY: build run test clean docker-up docker-down proto
 
 # Build all applications
 build:
@@ -23,7 +23,7 @@ clean:
 
 # Docker commands
 docker-up:
-	docker-compose up -d
+	docker-compose up -d --build
 
 docker-down:
 	docker-compose down
@@ -38,14 +38,5 @@ dev-api:
 dev-consumer:
 	air -c .air.toml ./cmd/consumer
 
-# Database migrations
-migrate-up:
-	migrate -path migrations -database "postgresql://postgres:password@localhost:5432/microservice_db?sslmode=disable" up
-
-migrate-down:
-	migrate -path migrations -database "postgresql://postgres:password@localhost:5432/microservice_db?sslmode=disable" down
-
-# Kafka topics
-create-topics:
-	docker exec -it kafka kafka-topics --create --topic user.events --bootstrap-server localhost:9092 --replication-factor 1 --partitions 3
-
+proto:
+	protoc -I=./proto --go_out=./internal/events/ ./proto/*.proto

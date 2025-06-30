@@ -1,0 +1,9 @@
+syntax = "proto3";
+package userpb;
+
+option go_package = "proto/userpb";
+
+message UserUpdated {
+  string id = 1;
+  int64 updated_at = 2; // Unix timestamp (seconds)
+}

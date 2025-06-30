@@ -1,9 +1,9 @@
 server:
-  host: "localhost"
+  host: "api"
   port: "8080"
 
 database:
-  host: "localhost"
+  host: "postgres"
   port: "5432"
   user: "postgres"
   password: "password"
@@ -12,9 +12,11 @@ database:
 
 kafka:
   brokers:
-    - "localhost:9092"
+    - "kafka:9092"
   topics:
-    user_events: "user.events"
+    user_events: "user-events"
+  consumer_groups:
+    user_consumer: " user-consumer"
 
 logger:
   level: "info"

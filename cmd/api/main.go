@@ -9,6 +9,7 @@ import (
 	"github.com/kitamersion/go-goservice/internal/database"
 	"github.com/kitamersion/go-goservice/internal/domain/repositories"
 	"github.com/kitamersion/go-goservice/internal/domain/services"
+	"github.com/kitamersion/go-goservice/internal/events"
 	"github.com/kitamersion/go-goservice/internal/events/producer"
 	"github.com/sirupsen/logrus"
 )
@@ -33,6 +34,11 @@ func main() {
 	// Run migrations
 	if err := database.RunMigrations(db); err != nil {
 		log.Fatal("Failed to run migrations:", err)
+	}
+
+	// Initialize Kafka topics (runs every startup, safe if already exists)
+	if err := events.InitKafkaTopics(&cfg.Kafka, logger); err != nil {
+		logger.WithError(err).Fatal("Failed to initialize Kafka topics")
 	}
 
 	// Initialize producer
