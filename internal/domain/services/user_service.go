@@ -23,7 +23,7 @@ func NewUserService(userRepo repositories.UserRepository, producer *producer.Pro
 	}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, user *entities.User) error {
+func (s *UserService) CreateUser(ctx context.Context, user *entities.UserEntity) error {
 	if err := s.userRepo.Create(user); err != nil {
 		return err
 	}
@@ -37,11 +37,11 @@ func (s *UserService) CreateUser(ctx context.Context, user *entities.User) error
 	return s.producer.PublishEvent(ctx, event)
 }
 
-func (s *UserService) GetUserByID(id uuid.UUID) (*entities.User, error) {
+func (s *UserService) GetUserByID(id uuid.UUID) (*entities.UserEntity, error) {
 	return s.userRepo.GetByID(id)
 }
 
-func (s *UserService) UpdateUser(ctx context.Context, user *entities.User) error {
+func (s *UserService) UpdateUser(ctx context.Context, user *entities.UserEntity) error {
 	if err := s.userRepo.Update(user); err != nil {
 		return err
 	}

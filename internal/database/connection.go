@@ -35,7 +35,7 @@ func NewConnection(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 
 func RunMigrations(db *gorm.DB) error {
 	return db.AutoMigrate(
-		&entities.User{},
+		&entities.UserEntity{},
 		&entities.Event{},
 	)
 }
