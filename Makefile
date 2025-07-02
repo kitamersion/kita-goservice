@@ -1,17 +1,32 @@
-.PHONY: build run test clean docker-up docker-down proto
+.PHONY: generate build run test clean docker-up docker-down proto
+
+# Generate GraphQL code
+generate:
+	go mod tidy
+	go get github.com/99designs/gqlgen
+	go run github.com/99designs/gqlgen generate
 
 # Build all applications
-build:
+build: generate
 	go build -o bin/api ./cmd/api
 	go build -o bin/consumer ./cmd/consumer
+	go build -o bin/graph ./cmd/graph
 
 # Run API server
-run-api:
+run-api: generate
 	go run ./cmd/api
 
 # Run consumer
-run-consumer:
+run-consumer: generate
 	go run ./cmd/consumer
+
+# Run the application
+run: generate
+	go run cmd/api/main.go
+
+# Run the GraphQL server
+run-graph: generate
+	go run cmd/graph/main.go
 
 # Run tests
 test:
@@ -31,12 +46,10 @@ docker-down:
 docker-build:
 	docker-compose build
 
-# Development
-dev-api:
-	air -c .air.toml ./cmd/api
-
-dev-consumer:
-	air -c .air.toml ./cmd/consumer
 
 proto:
 	protoc -I=./proto --go_out=./internal/events/ ./proto/**/**/*.proto
+
+# Initialize GraphQL (run this once)
+init-graphql:
+	go run github.com/99designs/gqlgen init
