@@ -1,0 +1,152 @@
+name: 🏷️ Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Version increment type"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      pre_release:
+        description: "Mark as pre-release"
+        required: false
+        default: false
+        type: boolean
+      release_notes:
+        description: "Custom release notes (optional)"
+        required: false
+        type: string
+
+env:
+  GO_VERSION: "1.21"
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper versioning
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          # Get the latest tag, default to v0.0.0 if no tags exist
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "Latest tag: $LATEST_TAG"
+
+      - name: Calculate next version
+        id: next_version
+        uses: reecetech/version-increment@2023.10.2
+        with:
+          scheme: semver
+          increment: ${{ github.event.inputs.version_type }}
+          release_branch: main
+          use_api: true
+
+      - name: Generate release notes
+        id: generate_notes
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          fromTag: ${{ steps.get_latest_tag.outputs.latest_tag }}
+          toTag: ${{ steps.next_version.outputs.new_version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          configurationJson: |
+            {
+              "categories": [
+                {
+                  "title": "## 🚀 Features",
+                  "labels": ["feature", "enhancement"]
+                },
+                {
+                  "title": "## 🐛 Bug Fixes", 
+                  "labels": ["bug", "fix"]
+                },
+                {
+                  "title": "## 📚 Documentation",
+                  "labels": ["documentation", "docs"]
+                },
+                {
+                  "title": "## 🧹 Maintenance",
+                  "labels": ["maintenance", "chore", "dependencies"]
+                },
+                {
+                  "title": "## 💥 Breaking Changes",
+                  "labels": ["breaking"]
+                }
+              ],
+              "template": "${{CHANGELOG}}\n\n## 👥 Contributors\n\nThanks to all contributors who made this release possible:\n${{CONTRIBUTORS}}",
+              "pr_template": "- ${{TITLE}} (#${{NUMBER}}) by @${{AUTHOR}}",
+              "empty_template": "No significant changes in this release"
+            }
+
+      - name: Prepare release notes
+        id: prepare_notes
+        run: |
+          CUSTOM_NOTES="${{ github.event.inputs.release_notes }}"
+          AUTO_NOTES="${{ steps.generate_notes.outputs.changelog }}"
+
+          if [ -n "$CUSTOM_NOTES" ]; then
+            echo "$CUSTOM_NOTES" > release_notes.md
+            echo "" >> release_notes.md
+            echo "$AUTO_NOTES" >> release_notes.md
+          else
+            echo "$AUTO_NOTES" > release_notes.md
+          fi
+
+      - name: Run tests before release
+        run: |
+          go mod download
+          go test -v ./...
+          go vet ./...
+
+      - name: Build release binaries
+        run: |
+          NEW_VERSION="${{ steps.next_version.outputs.new_version }}"
+          mkdir -p dist
+
+          # Build for multiple platforms
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-linux-amd64 .
+          GOOS=linux GOARCH=arm64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-linux-arm64 .
+          GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-darwin-amd64 .
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-darwin-arm64 .
+          GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-windows-amd64.exe .
+
+          # Create checksums
+          cd dist
+          sha256sum * > checksums.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.next_version.outputs.new_version }}
+          name: ${{ steps.next_version.outputs.new_version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ github.event.inputs.pre_release }}
+          files: |
+            dist/${{ github.event.repository.name }}-*
+            dist/checksums.txt
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Output release info
+        run: |
+          echo "🎉 Release created successfully!"
+          echo "Version: ${{ steps.next_version.outputs.new_version }}"
+          echo "Pre-release: ${{ github.event.inputs.pre_release }}"
+          echo "Release URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.next_version.outputs.new_version }}"
