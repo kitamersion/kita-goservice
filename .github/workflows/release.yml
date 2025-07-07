@@ -66,31 +66,26 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           configurationJson: |
             {
-              "categories": [
-                {
-                  "title": "## 🚀 Features",
-                  "labels": ["feature", "enhancement"]
-                },
-                {
-                  "title": "## 🐛 Bug Fixes", 
-                  "labels": ["bug", "fix"]
-                },
-                {
-                  "title": "## 📚 Documentation",
-                  "labels": ["documentation", "docs"]
-                },
-                {
-                  "title": "## 🧹 Maintenance",
-                  "labels": ["maintenance", "chore", "dependencies"]
-                },
-                {
-                  "title": "## 💥 Breaking Changes",
-                  "labels": ["breaking"]
-                }
-              ],
-              "template": "${{ steps.generate_notes.outputs.changelog }}\n\n## 👥 Contributors\n\nThanks to all contributors who made this release possible:\n${{ steps.generate_notes.outputs.contributors }}",
-              "pr_template": "- ${{TITLE}} (#${{NUMBER}}) by @${{AUTHOR}}",
-              "empty_template": "No significant changes in this release"
+                "categories": [
+                    {
+                        "title": "## 🚀 Features",
+                        "labels": ["feat"]
+                    },
+                    {
+                        "title": "## 🐛 Fixes",
+                        "labels": ["fix"]
+                    },
+                    {
+                        "title": "## 🧪 Tests",
+                        "labels": ["test"]
+                    }
+                ],
+                "sort": "ASC",
+                "template": "${{CHANGELOG}}",
+                "pr_template": "- ${{TITLE}}\n   - PR: #${{NUMBER}}",
+                "empty_template": "- no changes",
+                "max_pull_requests": 1000,
+                "max_back_track_time_days": 1000
             }
 
       - name: Prepare release notes
