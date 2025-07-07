@@ -54,6 +54,9 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [api, graph, consumer]
     steps:
       - uses: actions/checkout@v4
 
@@ -64,13 +67,13 @@ jobs:
 
       - name: Build binary
         run: |
-          CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ${{ github.event.repository.name }} .
+          CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ${{ github.event.repository.name }}-${{ matrix.app }} ./cmd/${{ matrix.app }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}
-          path: ${{ github.event.repository.name }}
+          name: ${{ github.event.repository.name }}-${{ matrix.app }}
+          path: ${{ github.event.repository.name }}-${{ matrix.app }}
 
   docker-build:
     needs: test
