@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type User struct {
+type UserEntity struct {
 	ID        uuid.UUID `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
 	Email     string    `json:"email" gorm:"uniqueIndex;not null"`
 	Name      string    `json:"name" gorm:"not null"`

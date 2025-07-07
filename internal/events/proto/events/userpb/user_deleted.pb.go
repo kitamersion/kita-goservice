@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v6.31.1
-// source: user_deleted.proto
+// source: user/events/user_deleted.proto
 
 package userpb
 
@@ -31,7 +31,7 @@ type UserDeleted struct {
 
 func (x *UserDeleted) Reset() {
 	*x = UserDeleted{}
-	mi := &file_user_deleted_proto_msgTypes[0]
+	mi := &file_user_events_user_deleted_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *UserDeleted) String() string {
 func (*UserDeleted) ProtoMessage() {}
 
 func (x *UserDeleted) ProtoReflect() protoreflect.Message {
-	mi := &file_user_deleted_proto_msgTypes[0]
+	mi := &file_user_events_user_deleted_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *UserDeleted) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserDeleted.ProtoReflect.Descriptor instead.
 func (*UserDeleted) Descriptor() ([]byte, []int) {
-	return file_user_deleted_proto_rawDescGZIP(), []int{0}
+	return file_user_events_user_deleted_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *UserDeleted) GetId() string {
@@ -73,33 +73,33 @@ func (x *UserDeleted) GetDeletedAt() int64 {
 	return 0
 }
 
-var File_user_deleted_proto protoreflect.FileDescriptor
+var File_user_events_user_deleted_proto protoreflect.FileDescriptor
 
-const file_user_deleted_proto_rawDesc = "" +
+const file_user_events_user_deleted_proto_rawDesc = "" +
 	"\n" +
-	"\x12user_deleted.proto\x12\x06userpb\"<\n" +
+	"\x1euser/events/user_deleted.proto\x12\x06userpb\"<\n" +
 	"\vUserDeleted\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
-	"deleted_at\x18\x02 \x01(\x03R\tdeletedAtB\x0eZ\fproto/userpbb\x06proto3"
+	"deleted_at\x18\x02 \x01(\x03R\tdeletedAtB\x15Z\x13proto/events/userpbb\x06proto3"
 
 var (
-	file_user_deleted_proto_rawDescOnce sync.Once
-	file_user_deleted_proto_rawDescData []byte
+	file_user_events_user_deleted_proto_rawDescOnce sync.Once
+	file_user_events_user_deleted_proto_rawDescData []byte
 )
 
-func file_user_deleted_proto_rawDescGZIP() []byte {
-	file_user_deleted_proto_rawDescOnce.Do(func() {
-		file_user_deleted_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_user_deleted_proto_rawDesc), len(file_user_deleted_proto_rawDesc)))
+func file_user_events_user_deleted_proto_rawDescGZIP() []byte {
+	file_user_events_user_deleted_proto_rawDescOnce.Do(func() {
+		file_user_events_user_deleted_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_user_events_user_deleted_proto_rawDesc), len(file_user_events_user_deleted_proto_rawDesc)))
 	})
-	return file_user_deleted_proto_rawDescData
+	return file_user_events_user_deleted_proto_rawDescData
 }
 
-var file_user_deleted_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_user_deleted_proto_goTypes = []any{
+var file_user_events_user_deleted_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_user_events_user_deleted_proto_goTypes = []any{
 	(*UserDeleted)(nil), // 0: userpb.UserDeleted
 }
-var file_user_deleted_proto_depIdxs = []int32{
+var file_user_events_user_deleted_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -107,26 +107,26 @@ var file_user_deleted_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_user_deleted_proto_init() }
-func file_user_deleted_proto_init() {
-	if File_user_deleted_proto != nil {
+func init() { file_user_events_user_deleted_proto_init() }
+func file_user_events_user_deleted_proto_init() {
+	if File_user_events_user_deleted_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_deleted_proto_rawDesc), len(file_user_deleted_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_events_user_deleted_proto_rawDesc), len(file_user_events_user_deleted_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_user_deleted_proto_goTypes,
-		DependencyIndexes: file_user_deleted_proto_depIdxs,
-		MessageInfos:      file_user_deleted_proto_msgTypes,
+		GoTypes:           file_user_events_user_deleted_proto_goTypes,
+		DependencyIndexes: file_user_events_user_deleted_proto_depIdxs,
+		MessageInfos:      file_user_events_user_deleted_proto_msgTypes,
 	}.Build()
-	File_user_deleted_proto = out.File
-	file_user_deleted_proto_goTypes = nil
-	file_user_deleted_proto_depIdxs = nil
+	File_user_events_user_deleted_proto = out.File
+	file_user_events_user_deleted_proto_goTypes = nil
+	file_user_events_user_deleted_proto_depIdxs = nil
 }

@@ -63,6 +63,26 @@ services:
     networks:
       - app_network
 
+  graph:
+    # TODO: use versioned image
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.graph
+    container_name: graph
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      - DATABASE_HOST=postgres
+      - KAFKA_BROKERS=kafka:9092
+      - PORT=8000
+    networks:
+      - app_network
+
   consumer:
     # TODO: use versioned image
     build:
