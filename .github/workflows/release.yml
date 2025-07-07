@@ -88,7 +88,7 @@ jobs:
                   "labels": ["breaking"]
                 }
               ],
-              "template": "${{CHANGELOG}}\n\n## 👥 Contributors\n\nThanks to all contributors who made this release possible:\n${{CONTRIBUTORS}}",
+              "template": "${{ steps.generate_notes.outputs.changelog }}\n\n## 👥 Contributors\n\nThanks to all contributors who made this release possible:\n${{ steps.generate_notes.outputs.contributors }}",
               "pr_template": "- ${{TITLE}} (#${{NUMBER}}) by @${{AUTHOR}}",
               "empty_template": "No significant changes in this release"
             }
@@ -118,12 +118,17 @@ jobs:
           NEW_VERSION="${{ steps.next_version.outputs.new_version }}"
           mkdir -p dist
 
-          # Build for multiple platforms
-          GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-linux-amd64 .
-          GOOS=linux GOARCH=arm64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-linux-arm64 .
-          GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-darwin-amd64 .
-          GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-darwin-arm64 .
-          GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-windows-amd64.exe .
+          # Build for multiple platforms (matching your Docker approach)
+          for app in api graph consumer; do
+            for GOOS in linux darwin; do
+              for GOARCH in amd64 arm64; do
+                BIN_NAME="${{ github.event.repository.name }}-${app}-${GOOS}-${GOARCH}"
+                GOOS=$GOOS GOARCH=$GOARCH go build -trimpath -ldflags "-X main.version=$NEW_VERSION" -o dist/$BIN_NAME ./cmd/$app
+              done
+            done
+            # Windows amd64
+            GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-X main.version=$NEW_VERSION" -o dist/${{ github.event.repository.name }}-${app}-windows-amd64.exe ./cmd/$app
+          done
 
           # Create checksums
           cd dist
