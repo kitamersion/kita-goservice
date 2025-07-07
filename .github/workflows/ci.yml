@@ -124,7 +124,7 @@ jobs:
         app: [api, graph, consumer]
     steps:
       - name: Delete old container images
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@v5
         with:
           package-name: ${{ github.event.repository.name }}-${{ matrix.app }}
           package-type: "container"
