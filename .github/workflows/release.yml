@@ -59,7 +59,7 @@ jobs:
 
       - name: Generate release notes
         id: generate_notes
-        uses: mikepenz/release-changelog-builder-action@v4
+        uses: mikepenz/release-changelog-builder-action@v5
         with:
           fromTag: ${{ steps.get_latest_tag.outputs.latest_tag }}
           toTag: ${{ steps.next_version.outputs.new_version }}
