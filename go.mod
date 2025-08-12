@@ -10,7 +10,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.20.1
 	github.com/vektah/gqlparser/v2 v2.5.30
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.7
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.25.10
 )
